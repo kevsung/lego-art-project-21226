@@ -1,21 +1,80 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
 * { box-sizing: border-box; }
 
+:root {
+  --bg: #fafafa;
+  --text: #1a1a1a;
+  --header-bg: #ffffff;
+  --border: #e0e0e0;
+  --panel-bg: #ffffff;
+  --step-bg: #eee;
+  --step-text: #777;
+  --accent: #d0271d;
+  --input-bg: #ffffff;
+  --input-text: #1a1a1a;
+  --table-border: #e0e0e0;
+  --legend-border: #eee;
+  --warning-bg: #fff3cd;
+  --warning-border: #ffe08a;
+  --warning-text: #7a5c00;
+  --dropzone-bg: #ffffff;
+  --dropzone-border: #bbb;
+  --dropzone-hover-bg: #fff5f5;
+}
+
+[data-theme="dark"] {
+  --bg: #16181c;
+  --text: #e8e8e8;
+  --header-bg: #1e2126;
+  --border: #33373d;
+  --panel-bg: #1e2126;
+  --step-bg: #2a2e35;
+  --step-text: #a0a4ab;
+  --accent: #e14a3f;
+  --input-bg: #26292f;
+  --input-text: #e8e8e8;
+  --table-border: #33373d;
+  --legend-border: #33373d;
+  --warning-bg: #4a3c15;
+  --warning-border: #6b5720;
+  --warning-text: #ffdf8a;
+  --dropzone-bg: #1e2126;
+  --dropzone-border: #4a4e55;
+  --dropzone-hover-bg: #2a1f1f;
+}
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   margin: 0;
-  background: #fafafa;
-  color: #1a1a1a;
+  background: var(--bg);
+  color: var(--text);
 }
 
 .app-header {
   padding: 16px 20px;
-  background: #ffffff;
-  border-bottom: 1px solid #e0e0e0;
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
 }
 
 .app-header h1 {
   margin: 0 0 12px;
   font-size: 1.4rem;
+}
+
+.theme-toggle {
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel-bg);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.9rem;
+  white-space: nowrap;
 }
 
 .steps {
@@ -30,13 +89,13 @@ body {
 .steps li {
   padding: 4px 10px;
   border-radius: 999px;
-  background: #eee;
+  background: var(--step-bg);
   font-size: 0.85rem;
-  color: #777;
+  color: var(--step-text);
 }
 
 .steps li.active {
-  background: #d0271d;
+  background: var(--accent);
   color: #fff;
   font-weight: 600;
 }
@@ -61,17 +120,17 @@ main {
 }
 
 .drop-zone {
-  border: 2px dashed #bbb;
+  border: 2px dashed var(--dropzone-border);
   border-radius: 8px;
   padding: 60px 20px;
   text-align: center;
   cursor: pointer;
-  background: #fff;
+  background: var(--dropzone-bg);
 }
 
 .drop-zone.dragover {
-  border-color: #d0271d;
-  background: #fff5f5;
+  border-color: var(--accent);
+  background: var(--dropzone-hover-bg);
 }
 
 .actions {
@@ -82,17 +141,18 @@ main {
 
 button {
   padding: 8px 16px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border);
   border-radius: 6px;
-  background: #fff;
+  background: var(--panel-bg);
+  color: var(--text);
   cursor: pointer;
   font-size: 0.95rem;
 }
 
 button.primary {
-  background: #d0271d;
+  background: var(--accent);
   color: #fff;
-  border-color: #d0271d;
+  border-color: var(--accent);
 }
 
 button:hover {
@@ -117,7 +177,7 @@ button:hover {
 .crop-box {
   position: absolute;
   border: 2px solid #fff;
-  outline: 2px solid #d0271d;
+  outline: 2px solid var(--accent);
   box-shadow: 0 0 0 2000px rgba(0,0,0,0.4);
   cursor: move;
 }
@@ -128,7 +188,7 @@ button:hover {
   bottom: -8px;
   width: 16px;
   height: 16px;
-  background: #d0271d;
+  background: var(--accent);
   border: 2px solid #fff;
   border-radius: 50%;
   cursor: nwse-resize;
@@ -137,11 +197,11 @@ button:hover {
 .palette-table {
   border-collapse: collapse;
   width: 100%;
-  background: #fff;
+  background: var(--panel-bg);
 }
 
 .palette-table th, .palette-table td {
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--table-border);
   padding: 6px 8px;
   text-align: left;
   font-size: 0.9rem;
@@ -155,6 +215,14 @@ button:hover {
   display: inline-block;
 }
 
+.palette-table input[type="text"],
+.palette-table input[type="number"] {
+  background: var(--input-bg);
+  color: var(--input-text);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
 .palette-table input[type="text"] {
   width: 90px;
 }
@@ -164,11 +232,11 @@ button:hover {
 }
 
 .warning {
-  background: #fff3cd;
-  border: 1px solid #ffe08a;
+  background: var(--warning-bg);
+  border: 1px solid var(--warning-border);
   padding: 10px 14px;
   border-radius: 6px;
-  color: #7a5c00;
+  color: var(--warning-text);
 }
 
 .preview-container, .assembly-container {
@@ -179,7 +247,7 @@ button:hover {
 
 .preview-container canvas, .assembly-container canvas {
   max-width: 100%;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border);
 }
 
 .tiles-container {
@@ -189,8 +257,8 @@ button:hover {
 }
 
 .tile-card {
-  background: #fff;
-  border: 1px solid #e0e0e0;
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 12px;
 }
@@ -212,7 +280,7 @@ button:hover {
 }
 
 .legend th, .legend td {
-  border: 1px solid #eee;
+  border: 1px solid var(--legend-border);
   padding: 3px 6px;
   text-align: left;
 }
@@ -227,7 +295,7 @@ button:hover {
 }
 
 @media print {
-  .no-print, .app-header {
+  .no-print, .app-header, .theme-toggle {
     display: none !important;
   }
   .step-panel {

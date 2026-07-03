@@ -4,19 +4,24 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Lego Pixel Art Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
 <header class="app-header">
-  <h1>Lego Pixel Art Generator</h1>
-  <ol class="steps" id="stepIndicator">
-    <li data-step="1" class="active">Upload</li>
-    <li data-step="2">Crop</li>
-    <li data-step="3">Palette</li>
-    <li data-step="4">Generate</li>
-    <li data-step="5">Preview</li>
-    <li data-step="6">Instructions</li>
-  </ol>
+  <div>
+    <h1>Lego Pixel Art Generator</h1>
+    <ol class="steps" id="stepIndicator">
+      <li data-step="1" class="active">Upload</li>
+      <li data-step="2">Crop</li>
+      <li data-step="3">Palette</li>
+      <li data-step="4">Generate</li>
+      <li data-step="5">Preview</li>
+      <li data-step="6">Instructions</li>
+    </ol>
+  </div>
+  <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode" type="button">Dark mode</button>
 </header>
 
 <main>

@@ -1,6 +1,26 @@
 // App orchestration and event wiring.
 
 (async function () {
+  // ---------- Theme toggle ----------
+  const themeToggle = document.getElementById('themeToggle');
+  const THEME_KEY = 'lego-pixel-art-theme';
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    themeToggle.textContent = theme === 'dark' ? 'Light mode' : 'Dark mode';
+  }
+
+  const storedTheme = localStorage.getItem(THEME_KEY);
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  applyTheme(storedTheme || (prefersDark ? 'dark' : 'light'));
+
+  themeToggle.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+    localStorage.setItem(THEME_KEY, next);
+  });
+
   const MAX_LONG_EDGE = 1600;
 
   const state = {
