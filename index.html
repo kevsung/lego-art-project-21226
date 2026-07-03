@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lego Pixel Art Generator</title>
+<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+<header class="app-header">
+  <h1>Lego Pixel Art Generator</h1>
+  <ol class="steps" id="stepIndicator">
+    <li data-step="1" class="active">Upload</li>
+    <li data-step="2">Crop</li>
+    <li data-step="3">Palette</li>
+    <li data-step="4">Generate</li>
+    <li data-step="5">Preview</li>
+    <li data-step="6">Instructions</li>
+  </ol>
+</header>
+
+<main>
+  <!-- Step 1: Upload -->
+  <section class="step-panel active" id="panel-1">
+    <h2>1. Upload an image</h2>
+    <div id="dropZone" class="drop-zone">
+      <p>Drag &amp; drop an image here, or click to choose a file</p>
+      <input type="file" id="fileInput" accept="image/*" hidden />
+    </div>
+  </section>
+
+  <!-- Step 2: Crop -->
+  <section class="step-panel" id="panel-2">
+    <h2>2. Crop to a square</h2>
+    <div id="cropContainer" class="crop-container"></div>
+    <div class="actions">
+      <button id="backTo1">Back</button>
+      <button id="confirmCrop" class="primary">Confirm crop</button>
+    </div>
+  </section>
+
+  <!-- Step 3: Palette -->
+  <section class="step-panel" id="panel-3">
+    <h2>3. Review &amp; edit palette</h2>
+    <p id="supplyWarning" class="warning" hidden></p>
+    <table class="palette-table" id="paletteTable">
+      <thead>
+        <tr><th>Swatch</th><th>Lego Name</th><th>Common Name</th><th>Hex</th><th>Count</th></tr>
+      </thead>
+      <tbody id="paletteBody"></tbody>
+    </table>
+    <div class="actions">
+      <button id="backTo2">Back</button>
+      <button id="goToGenerate" class="primary">Continue</button>
+    </div>
+  </section>
+
+  <!-- Step 4: Generate -->
+  <section class="step-panel" id="panel-4">
+    <h2>4. Generate</h2>
+    <p>Click Generate to pixelate your cropped image to a 48&times;48 grid and match each pixel to your Lego inventory.</p>
+    <div class="actions">
+      <button id="backTo3">Back</button>
+      <button id="generateBtn" class="primary">Generate</button>
+    </div>
+  </section>
+
+  <!-- Step 5: Preview -->
+  <section class="step-panel" id="panel-5">
+    <h2>5. Preview</h2>
+    <div id="previewContainer" class="preview-container"></div>
+    <div class="actions">
+      <button id="backTo4">Back</button>
+      <button id="downloadPreview">Download PNG</button>
+      <button id="goToInstructions" class="primary">View instructions</button>
+    </div>
+  </section>
+
+  <!-- Step 6: Instructions -->
+  <section class="step-panel" id="panel-6">
+    <h2>6. Build instructions</h2>
+    <div class="actions no-print">
+      <button id="backTo5">Back</button>
+      <button id="downloadAll" class="primary">Download all (PNGs)</button>
+      <button id="printBtn">Print</button>
+    </div>
+    <h3>Assembly diagram</h3>
+    <div id="assemblyContainer" class="assembly-container"></div>
+    <h3>Tile instructions</h3>
+    <div id="tilesContainer" class="tiles-container"></div>
+  </section>
+</main>
+
+<script src="./js/colorSpace.js"></script>
+<script src="./js/palette.js"></script>
+<script src="./js/cropper.js"></script>
+<script src="./js/pixelate.js"></script>
+<script src="./js/tiles.js"></script>
+<script src="./js/render.js"></script>
+<script src="./js/main.js"></script>
+</body>
+</html>
