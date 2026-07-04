@@ -37,23 +37,29 @@ const Palette = (() => {
       return { assignment, usedCounts: {} };
     }
 
-    // The darkest palette colors (near-black), used to keep very dark source
-    // pixels (e.g. a flattened transparent background) from falling back to
-    // a lighter color once those run out of stock.
-    const DARK_L_THRESHOLD = 25;
-    const darkCandidates = candidates.filter((c) => c.lab[0] < DARK_L_THRESHOLD);
-    const PIXEL_DARK_L_THRESHOLD = 20;
+    // Very dark source pixels (e.g. a flattened transparent background, or
+    // dark image content) may only ever be matched to these two darkest
+    // palette colors — never any other color, even if both run out of stock.
+    const DARK_IDS = new Set(['black', 'dark_blue']);
+    const darkCandidates = candidates.filter((c) => DARK_IDS.has(colors[c.idx].id));
+    const PIXEL_DARK_L_THRESHOLD = 35;
 
-    // Precompute pixel Lab + best/second-best distances for confidence ordering.
+    // Precompute pixel Lab + which candidate pool applies + best/second-best
+    // distances within that pool, for confidence ordering.
     const pixelLabs = new Array(n);
+    const pixelPools = new Array(n);
     const order = [];
     for (let i = 0; i < n; i++) {
       const r = pixels[i * 4], g = pixels[i * 4 + 1], b = pixels[i * 4 + 2];
       const lab = ColorSpace.rgbToLab(r, g, b);
       pixelLabs[i] = lab;
 
+      const isDarkPixel = lab[0] < PIXEL_DARK_L_THRESHOLD && darkCandidates.length > 0;
+      const pool = isDarkPixel ? darkCandidates : candidates;
+      pixelPools[i] = pool;
+
       let best = Infinity, second = Infinity;
-      for (const c of candidates) {
+      for (const c of pool) {
         const d = ColorSpace.labDistance(lab, c.lab);
         if (d < best) {
           second = best;
@@ -73,8 +79,7 @@ const Palette = (() => {
 
     for (const { i } of order) {
       const lab = pixelLabs[i];
-      const isDarkPixel = lab[0] < PIXEL_DARK_L_THRESHOLD && darkCandidates.length > 0;
-      const pool = isDarkPixel ? darkCandidates : candidates;
+      const pool = pixelPools[i];
 
       let bestIdx = -1, bestDist = Infinity;
       for (const c of pool) {
@@ -86,8 +91,10 @@ const Palette = (() => {
           bestIdx = c.idx;
         }
       }
-      // Dark pixels never fall back to a lighter color once dark stock runs out;
-      // they're left unfilled instead.
+      // Dark pixels never fall back to any other color once black/dark-blue
+      // stock runs out; the most confidently-dark pixels are processed first
+      // (via the confidence ordering above) so any that go unfilled are the
+      // least clear-cut ones, and the tile's black background shows through.
       if (bestIdx !== -1) {
         assignment[i] = bestIdx;
         stock.set(bestIdx, stock.get(bestIdx) - 1);

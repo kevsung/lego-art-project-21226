@@ -13,7 +13,7 @@ const Render = (() => {
     for (let r = 0; r < gridSize; r++) {
       for (let c = 0; c < gridSize; c++) {
         const idx = assignment[r * gridSize + c];
-        ctx.fillStyle = idx === -1 ? '#cccccc' : colors[idx].hex;
+        ctx.fillStyle = idx === -1 ? '#000000' : colors[idx].hex;
         const cx = c * pipSize + radius;
         const cy = r * pipSize + radius;
         ctx.beginPath();
@@ -43,7 +43,7 @@ const Render = (() => {
         const x = c * cellSize, y = r * cellSize;
         const cx = x + radius, cy = y + radius;
         if (idx === -1) {
-          ctx.fillStyle = '#eeeeee';
+          ctx.fillStyle = '#000000';
           ctx.fillRect(x, y, cellSize, cellSize);
         } else {
           const color = colors[idx];
