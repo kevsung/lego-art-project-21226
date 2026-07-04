@@ -47,7 +47,7 @@ A browser-based tool that:
 │   ├── colorSpace.js       # RGB <-> Lab conversion helpers
 │   └── render.js           # canvas drawing helpers, exports
 ├── /data
-│   └── palette.json         # editable color/count inventory (see below)
+│   └── palette.json         # fixed color/count inventory, read-only at runtime (see below)
 └── README.md
 ```
 
@@ -60,22 +60,48 @@ starter file for you from the user's existing inventory — see the attached
 ```json
 {
   "colors": [
-    { "id": "black", "legoName": "Black", "regularName": "Black", "hex": "#05131D", "count": 254 },
-    { "id": "earth_blue", "legoName": "Earth Blue", "regularName": "Dark Blue", "hex": "#0A3463", "count": 660 }
+    { "id": "black", "legoName": "Black", "regularName": "Black", "hex": "#151515", "count": 254 },
+    { "id": "dark_blue", "legoName": "Dark Blue", "regularName": "Earth Blue", "hex": "#19325A", "count": 660 }
   ]
 }
 ```
 
-**Important:** the `hex` values in the starter file are approximate — Claude
-Code should surface an in-app "Edit Palette" screen (simple table: swatch,
-name, hex input, count input) so the user can correct/fine-tune hex codes and
-update counts without touching the JSON file directly. On save, this can just
-update in-memory state (no persistence needed unless you want
-`localStorage`).
+(Full 16-color file is the attached `palette.json` — this snippet just shows
+the shape.)
+
+**This palette is fixed, not user-editable in the app.** The colors and
+counts represent exactly what's physically included in the user's base Lego
+kit — there's no scenario where the app should let someone add colors,
+increase counts, or otherwise deviate from `palette.json`. All color-matching
+is constrained to exactly these 16 colors and these exact quantities, no
+exceptions. If the palette ever needs to change, it's edited directly in the
+JSON file, not through the UI.
+
+**The array order in `palette.json` is meaningful and must be preserved.**
+The kit's physical setup process has the user build a numbered color-key
+card (1–16). The order of colors in `palette.json` is deliberately set to
+match that card: index 1 = Black, ... index 16 = Bright Yellowish Green. Do
+not sort, alphabetize, or otherwise reorder the `colors` array anywhere in
+the code — its position order **is** the official color-key numbering used
+throughout the instructions output (see 5h).
 
 ## 5. Feature-by-feature spec
 
-### 5a. Image intake
+### 5a. Homepage / intro copy
+Before the upload step, show brief explanatory text (a few sentences is
+enough) making clear to the user that:
+- The output is generated using a **fixed set of 16 colors**, matching
+  exactly what's included in their physical Lego kit.
+- The **quantity of each color is limited** to what's in the kit — the tool
+  will never assign more pips of a color than are actually available, even
+  if the source image would otherwise call for more.
+- Because of this, the final result is a **best-fit approximation** of the
+  uploaded image within those constraints, not a pixel-perfect color match.
+
+This sets expectations up front so the constrained/approximate nature of the
+output doesn't feel like a bug later.
+
+### 5b. Image intake
 - File input + drag-and-drop zone, accepts standard image types
   (jpg/png/webp/gif/heic where the browser supports it).
 - Read via `FileReader` → `<img>` → draw to an offscreen canvas.
@@ -86,20 +112,20 @@ update in-memory state (no persistence needed unless you want
   long edge before cropping) purely for performance; final output only needs
   48×48 anyway.
 
-### 5b. Square crop
+### 5c. Square crop
 - Show the uploaded image with a draggable/resizable square crop overlay
   (default: centered, sized to the shorter dimension).
 - Support both mouse drag and touch (mobile-friendly).
 - "Confirm crop" button commits the square region to a working canvas.
 
-### 5c. Pixelate to 48×48
+### 5d. Pixelate to 48×48
 - Draw the cropped square canvas into a 48×48 canvas using
   `drawImage` with smoothing enabled (this gives an averaged/downsampled
   result rather than nearest-neighbor point-sampling, which looks much better
   for photo-like source images).
 - Read back the 48×48 pixel buffer via `getImageData`.
 
-### 5d. Palette matching with inventory constraints
+### 5e. Palette matching with inventory constraints
 This is the core algorithm. Naive "nearest color per pixel" will over-use
 popular colors beyond what's in stock, so it needs to account for supply.
 
@@ -136,35 +162,40 @@ optimal assignment is a min-cost flow / transportation problem. If the greedy
 result looks patchy on tricky images, this is the place to improve later —
 not needed for a first working version.
 
-### 5e. Final pixelated preview
+### 5f. Final pixelated preview
 - Render the 48×48 recolored grid back onto a canvas, scaled up with
   `imageSmoothingEnabled = false` (crisp blocky pixels, not blurred) — e.g.
   scale each pip to a 12–20px square for viewing/export.
 - Offer a PNG download of this final square image.
 
-### 5f. Split into 9 tiles
+### 5g. Split into 9 tiles
 - The 48×48 grid divides evenly into nine 16×16 tiles: columns 0–15/16–31/32–47
   × rows 0–15/16–31/32–47.
 - Label them 1–9 in reading order (left→right, top→bottom), or optionally
   A1–C3 (row letter, column number) — either is fine, just be consistent
   across the tile view and the assembly diagram.
 
-### 5g. Build instructions per tile
+### 5h. Build instructions per tile
 For each of the 9 tiles, render:
-- A 16×16 grid showing each cell's color swatch **and** a short color code
-  (e.g. first letters of `id`, or a number 1–16 mapped in a legend) so it's
-  usable by colorblind users and readable at small print size — don't rely on
-  color alone.
-- A legend below/beside the grid: swatch → code → Lego color name → count
-  used in this tile.
+- A 16×16 grid showing each cell's color swatch **and** its **numeric color
+  key (1–16)**, matching the physical color-key card the user already builds
+  as part of the kit's setup. The number for a color is simply its 1-indexed
+  position in `palette.json`'s `colors` array (1 = Black, ..., 16 = Bright
+  Yellowish Green) — do not invent a separate coding scheme. Showing the
+  number (not just the swatch color) matters for colorblind users and for
+  readability at small print size.
+- A legend below/beside the grid: swatch → number → Lego color name → count
+  used in this tile. (This is a per-tile "how many of each number you'll need
+  for this tile" summary — helpful for pre-sorting pieces before starting a
+  tile.)
 - A tile header showing its position label (e.g. "Tile 5 of 9 — Center").
 
-### 5h. Assembly diagram
+### 5i. Assembly diagram
 - A simple 3×3 layout diagram showing tile numbers/labels in their final
   position, so the user knows how to arrange the nine finished 16×16 sections
   into the full image.
 
-### 5i. Export
+### 5j. Export
 - "Download all" should produce, at minimum:
   - The full 48×48 preview image (PNG).
   - Each of the 9 tile instruction sheets (PNG, or combine into one printable
@@ -175,9 +206,12 @@ For each of the 9 tiles, render:
 
 ## 6. UI flow (suggested)
 
-1. Upload → 2. Crop → 3. Review/edit palette & counts → 4. Generate
+1. Homepage (intro/explanation copy) → 2. Upload → 3. Crop → 4. Generate
 (runs pixelate + matching) → 5. Preview full image → 6. View/download tile
 instructions + assembly diagram.
+
+There is no palette review/edit step — the palette is fixed (see section 4)
+and isn't part of the user-facing flow at all.
 
 Keep each step on its own screen/section so state is easy to reason about,
 with a persistent step indicator.
@@ -188,12 +222,13 @@ with a persistent step indicator.
   pixelation — that's fine, just don't crash).
 - Non-square, extreme aspect ratio images (crop UI needs to handle very wide
   or very tall sources gracefully).
-- Total palette supply < 2,304 pieces (see 5d).
-- A color with 0 count from the start (exclude from candidates entirely, but
-  still show in the palette editor as "out of stock").
+- Total palette supply < 2,304 pieces (see 5e).
+- A color with 0 count from the start (exclude from candidates entirely —
+  since there's no palette editor, this would only happen if `palette.json`
+  itself is edited to set a count to 0).
 - Transparent PNGs (flatten onto a white or user-chosen background before
   processing).
-- Large file uploads (multi-MB photos) — downscale early per 5a for
+- Large file uploads (multi-MB photos) — downscale early per 5b for
   performance.
 
 ## 8. Testing checklist

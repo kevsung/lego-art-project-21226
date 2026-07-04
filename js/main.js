@@ -43,7 +43,10 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // ---------- Step 1: Upload ----------
+  // ---------- Step 1: Home ----------
+  document.getElementById('startBtn').addEventListener('click', () => goToStep(2));
+
+  // ---------- Step 2: Upload ----------
   const dropZone = document.getElementById('dropZone');
   const fileInput = document.getElementById('fileInput');
 
@@ -88,94 +91,33 @@
     ctx.drawImage(bitmap, 0, 0, w, h);
 
     Cropper.setImage(canvas, w, h);
-    goToStep(2);
+    goToStep(3);
   }
 
-  // ---------- Step 2: Crop ----------
+  // ---------- Step 3: Crop ----------
   Cropper.init(document.getElementById('cropContainer'));
-  document.getElementById('backTo1').addEventListener('click', () => goToStep(1));
+  document.getElementById('backTo2').addEventListener('click', () => goToStep(2));
   document.getElementById('confirmCrop').addEventListener('click', () => {
     state.croppedCanvas = Cropper.getCroppedCanvas();
-    renderPaletteTable();
-    goToStep(3);
+    goToStep(4);
   });
 
-  // ---------- Step 3: Palette ----------
-  const paletteBody = document.getElementById('paletteBody');
+  // ---------- Palette (fixed, read-only, loaded from data/palette.json) ----------
   const supplyWarning = document.getElementById('supplyWarning');
   const GRID_TOTAL = Pixelate.GRID_SIZE * Pixelate.GRID_SIZE;
 
   await Palette.load();
 
-  function renderPaletteTable() {
-    const colors = Palette.getColors();
-    paletteBody.innerHTML = '';
-    colors.forEach((c, idx) => {
-      const tr = document.createElement('tr');
-      if ((c.count | 0) <= 0) tr.classList.add('out-of-stock');
-
-      const swatchTd = document.createElement('td');
-      const swatch = document.createElement('span');
-      swatch.className = 'swatch';
-      swatch.style.background = c.hex;
-      swatchTd.appendChild(swatch);
-
-      const legoTd = document.createElement('td');
-      legoTd.textContent = c.legoName;
-
-      const regularTd = document.createElement('td');
-      regularTd.textContent = c.regularName;
-
-      const hexTd = document.createElement('td');
-      const hexInput = document.createElement('input');
-      hexInput.type = 'text';
-      hexInput.value = c.hex;
-      hexInput.addEventListener('change', () => {
-        c.hex = normalizeHex(hexInput.value) || c.hex;
-        hexInput.value = c.hex;
-        swatch.style.background = c.hex;
-        checkSupply();
-      });
-      hexTd.appendChild(hexInput);
-
-      const countTd = document.createElement('td');
-      const countInput = document.createElement('input');
-      countInput.type = 'number';
-      countInput.min = '0';
-      countInput.value = c.count;
-      countInput.addEventListener('change', () => {
-        c.count = Math.max(0, parseInt(countInput.value, 10) || 0);
-        countInput.value = c.count;
-        tr.classList.toggle('out-of-stock', c.count <= 0);
-        checkSupply();
-      });
-      countTd.appendChild(countInput);
-
-      tr.append(swatchTd, legoTd, regularTd, hexTd, countTd);
-      paletteBody.appendChild(tr);
-    });
-    checkSupply();
-  }
-
-  function normalizeHex(v) {
-    v = v.trim();
-    if (/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(v)) return v.toUpperCase();
-    if (/^([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(v)) return ('#' + v).toUpperCase();
-    return null;
-  }
-
   function checkSupply() {
     const total = Palette.totalSupply();
     if (total < GRID_TOTAL) {
       supplyWarning.hidden = false;
-      supplyWarning.textContent = `Warning: total available pieces (${total}) is less than the ${GRID_TOTAL} needed to fill the full 48x48 grid. Some cells may be left unfilled unless you increase counts.`;
+      supplyWarning.textContent = `Warning: total available pieces (${total}) is less than the ${GRID_TOTAL} needed to fill the full 48x48 grid. Some cells may be left unfilled.`;
     } else {
       supplyWarning.hidden = true;
     }
   }
-
-  document.getElementById('backTo2').addEventListener('click', () => goToStep(2));
-  document.getElementById('goToGenerate').addEventListener('click', () => goToStep(4));
+  checkSupply();
 
   // ---------- Step 4: Generate ----------
   document.getElementById('backTo3').addEventListener('click', () => goToStep(3));
@@ -243,7 +185,7 @@
       const counts = Tiles.tileColorCounts(tile);
       const legend = document.createElement('table');
       legend.className = 'legend';
-      legend.innerHTML = '<thead><tr><th></th><th>Code</th><th>Lego Color</th><th>Count</th></tr></thead>';
+      legend.innerHTML = '<thead><tr><th></th><th>#</th><th>Lego Color</th><th>Count</th></tr></thead>';
       const tbody = document.createElement('tbody');
       [...counts.entries()]
         .sort((a, b) => b[1] - a[1])

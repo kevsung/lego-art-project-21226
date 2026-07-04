@@ -34,26 +34,13 @@ const Tiles = (() => {
     return tiles;
   }
 
-  // Build a short code per color id, e.g. first letters, deduped with numeric suffix if needed.
+  // The color-key number is simply each color's 1-indexed position in the
+  // palette array, matching the physical color-key card from the kit's
+  // setup instructions. The array order must never be sorted/reordered.
   function buildColorCodes(colors) {
-    const used = new Set();
     const codes = {};
     colors.forEach((c, idx) => {
-      let base = c.legoName
-        .split(/\s+/)
-        .map((w) => w[0])
-        .join('')
-        .toUpperCase()
-        .slice(0, 3);
-      if (!base) base = 'C' + idx;
-      let code = base;
-      let n = 1;
-      while (used.has(code)) {
-        code = base + n;
-        n++;
-      }
-      used.add(code);
-      codes[idx] = code;
+      codes[idx] = String(idx + 1);
     });
     return codes;
   }

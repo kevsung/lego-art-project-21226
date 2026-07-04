@@ -13,9 +13,9 @@
   <div>
     <h1>Lego Pixel Art Generator</h1>
     <ol class="steps" id="stepIndicator">
-      <li data-step="1" class="active">Upload</li>
-      <li data-step="2">Crop</li>
-      <li data-step="3">Palette</li>
+      <li data-step="1" class="active">Home</li>
+      <li data-step="2">Upload</li>
+      <li data-step="3">Crop</li>
       <li data-step="4">Generate</li>
       <li data-step="5">Preview</li>
       <li data-step="6">Instructions</li>
@@ -25,8 +25,29 @@
 </header>
 
 <main>
-  <!-- Step 1: Upload -->
+  <!-- Step 1: Home / intro -->
   <section class="step-panel active" id="panel-1">
+    <h2>Lego Pixel Art Generator</h2>
+    <p>
+      This tool is built specifically around <strong>Lego set 21226</strong>.
+      The color palette reflects exactly what's included in that kit: a
+      <strong>fixed set of 16 colors</strong>, with each color's quantity
+      limited to the exact number of pieces the kit provides.
+    </p>
+    <p>
+      The tool will never assign more pips of a color than are actually
+      available in the kit, even if your uploaded image would otherwise call
+      for more of that color. Because of this, the final result is a
+      <strong>best-fit approximation</strong> of your image within those
+      constraints &mdash; not a pixel-perfect color match.
+    </p>
+    <div class="actions">
+      <button id="startBtn" class="primary">Get started</button>
+    </div>
+  </section>
+
+  <!-- Step 2: Upload -->
+  <section class="step-panel" id="panel-2">
     <h2>1. Upload an image</h2>
     <div id="dropZone" class="drop-zone">
       <p>Drag &amp; drop an image here, or click to choose a file</p>
@@ -34,36 +55,21 @@
     </div>
   </section>
 
-  <!-- Step 2: Crop -->
-  <section class="step-panel" id="panel-2">
+  <!-- Step 3: Crop -->
+  <section class="step-panel" id="panel-3">
     <h2>2. Crop to a square</h2>
     <div id="cropContainer" class="crop-container"></div>
     <div class="actions">
-      <button id="backTo1">Back</button>
-      <button id="confirmCrop" class="primary">Confirm crop</button>
-    </div>
-  </section>
-
-  <!-- Step 3: Palette -->
-  <section class="step-panel" id="panel-3">
-    <h2>3. Review &amp; edit palette</h2>
-    <p id="supplyWarning" class="warning" hidden></p>
-    <table class="palette-table" id="paletteTable">
-      <thead>
-        <tr><th>Swatch</th><th>Lego Name</th><th>Common Name</th><th>Hex</th><th>Count</th></tr>
-      </thead>
-      <tbody id="paletteBody"></tbody>
-    </table>
-    <div class="actions">
       <button id="backTo2">Back</button>
-      <button id="goToGenerate" class="primary">Continue</button>
+      <button id="confirmCrop" class="primary">Confirm crop</button>
     </div>
   </section>
 
   <!-- Step 4: Generate -->
   <section class="step-panel" id="panel-4">
-    <h2>4. Generate</h2>
-    <p>Click Generate to pixelate your cropped image to a 48&times;48 grid and match each pixel to your Lego inventory.</p>
+    <h2>3. Generate</h2>
+    <p>Click Generate to pixelate your cropped image to a 48&times;48 grid and match each pixel to the kit's Lego inventory.</p>
+    <p id="supplyWarning" class="warning" hidden></p>
     <div class="actions">
       <button id="backTo3">Back</button>
       <button id="generateBtn" class="primary">Generate</button>
@@ -72,7 +78,7 @@
 
   <!-- Step 5: Preview -->
   <section class="step-panel" id="panel-5">
-    <h2>5. Preview</h2>
+    <h2>4. Preview</h2>
     <div id="previewContainer" class="preview-container"></div>
     <div class="actions">
       <button id="backTo4">Back</button>
@@ -83,7 +89,7 @@
 
   <!-- Step 6: Instructions -->
   <section class="step-panel" id="panel-6">
-    <h2>6. Build instructions</h2>
+    <h2>5. Build instructions</h2>
     <div class="actions no-print">
       <button id="backTo5">Back</button>
       <button id="downloadAll" class="primary">Download all (PNGs)</button>

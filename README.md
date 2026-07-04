@@ -1,8 +1,9 @@
 # Lego Pixel Art Generator
 
 A static, client-side web app that turns any photo into a 48×48 Lego pixel-art
-build plan, split into nine 16×16 build tiles with per-tile instructions and
-an assembly diagram — matched against your actual Lego piece inventory.
+build plan for Lego set 21226, split into nine 16×16 build tiles with
+per-tile instructions and an assembly diagram — matched against that kit's
+fixed 16-color inventory.
 
 No backend, no build step, no API keys. Runs entirely in the browser.
 
@@ -21,19 +22,23 @@ Any static server works (`npx serve`, VS Code Live Server, etc).
 
 ## Flow
 
-1. Upload an image (drag-and-drop or file picker).
-2. Crop it to a square.
-3. Review/edit the color palette and piece counts (`data/palette.json` is the
-   starting inventory — edits are in-memory only for this session).
+1. Home — intro explaining the tool is built around Lego set 21226's fixed
+   16-color, fixed-quantity kit.
+2. Upload an image (drag-and-drop or file picker).
+3. Crop it to a square.
 4. Generate — pixelates to 48×48 and matches each pixel to the closest
-   available Lego color, respecting your inventory counts.
+   available Lego color, respecting the kit's exact piece counts.
 5. Preview the final image, download as PNG.
-6. View/download/print the 9 tile instruction sheets plus an assembly diagram.
+6. View/download/print the 9 tile instruction sheets (numbered 1–16 to match
+   the kit's physical color-key card) plus an assembly diagram.
 
 ## Editing the palette
 
-Edit `data/palette.json` directly for permanent changes, or use the in-app
-palette table (step 3) for one-off adjustments to hex codes and counts.
+The palette is fixed and read-only at runtime — there is no in-app editor.
+To change colors or counts, edit `data/palette.json` directly. The array
+order is meaningful: each color's position (1-indexed) is the number shown
+in the build instructions, matching the kit's physical color-key card, so
+don't reorder it.
 
 ## Algorithm notes
 
