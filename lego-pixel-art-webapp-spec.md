@@ -144,12 +144,14 @@ manually so the pooling method is explicit and user-selectable:
    matching (5e).
 
 **UI control:** add a "Pooling method" dropdown (Average / Dual Min-Max /
-Min / Max) on the generate screen, defaulting to Average. Keep the cropped
-square source image data in app state so that pixelation + matching run
-**automatically** — as soon as the Generate step is entered (right after
-crop confirmation), and again immediately whenever the dropdown selection
-changes — with no manual "Generate"/"Regenerate" button click required.
-This lets someone quickly compare pooling methods on the same crop.
+Min / Max) on the combined Generate Preview screen (see section 6),
+defaulting to Average. Keep the cropped square source image data in app
+state so that pixelation + matching run **automatically** — as soon as the
+Generate Preview step is entered (right after crop confirmation), and again
+immediately whenever the dropdown selection changes, updating the displayed
+preview image in place with no page reload — with no manual
+"Generate"/"Regenerate" button click required. This lets someone quickly
+compare pooling methods on the same crop.
 
 ### 5e. Palette matching with inventory constraints
 This is the core algorithm. Naive "nearest color per pixel" will over-use
@@ -187,10 +189,10 @@ Support:
   distance there.
 
 **UI control:** add a "Color distance" dropdown (Euclidean RGB / Euclidean
-LAB / CIE94 / CIEDE2000 / DIN99o) on the Generate screen, alongside the
-pooling method dropdown, defaulting to Euclidean LAB. Like the pooling
-dropdown, changing this selection re-runs matching immediately — no button
-click needed.
+LAB / CIE94 / CIEDE2000 / DIN99o) on the Generate Preview screen, alongside
+the pooling method dropdown, defaulting to Euclidean LAB. Like the pooling
+dropdown, changing this selection re-runs matching immediately and updates
+the displayed preview — no button click needed.
 
 This ordering matters: assigning the "easy" pixels first (a very clearly red
 pixel) before the "ambiguous" ones prevents an early ambiguous pixel from
@@ -228,6 +230,10 @@ not needed for a first working version.
   `imageSmoothingEnabled = false` on the underlying canvas.
 - Pixels left unfilled due to piece-count exhaustion (see 5e) render as
   black, matching the baseplate showing through.
+- This preview lives on the same screen as the pooling method / color
+  distance dropdowns (see section 6) — there is no separate preview step.
+  Re-running generation (on dropdown change) re-renders this same preview in
+  place.
 - Offer a PNG download of this final square image.
 
 ### 5g. Split into 9 tiles
@@ -270,18 +276,27 @@ For each of the 9 tiles, render:
 
 ## 6. UI flow (suggested)
 
-1. Homepage (intro/explanation copy) → 2. Upload → 3. Crop → 4. Generate
-(pixelate + matching run automatically; pooling method and color distance
-dropdowns available) → 5. Preview full image → 6. View/download tile
-instructions + assembly diagram.
+1. Homepage (intro/explanation copy) → 2. Upload → 3. Crop → 4. **Generate
+Preview** (pixelate + matching run automatically, showing the live preview
+image, with pooling method and color distance dropdowns) → 5. View/download
+tile instructions + assembly diagram.
 
-The pooling method dropdown (Average / Dual Min-Max / Min / Max) and the
-color distance dropdown (Euclidean RGB / Euclidean LAB / CIE94 / CIEDE2000 /
-DIN99o) both live on the Generate screen. Entering the Generate step (right
-after crop confirmation) automatically runs pixelation and matching against
-the cropped image; changing either dropdown re-runs it again immediately —
-no "Generate"/"Regenerate" button click needed. No re-upload/re-crop is ever
+There is **no separate Preview step** — the "Generate" and "Preview" steps
+from earlier revisions are combined into a single "Generate Preview" screen.
+Entering that step (right after crop confirmation) automatically runs
+pixelation + matching against the cropped image and displays the resulting
+48×48 preview using the **first option in each dropdown** (Average pooling,
+Euclidean LAB distance). The pooling method dropdown (Average / Dual
+Min-Max / Min / Max) and the color distance dropdown (Euclidean RGB /
+Euclidean LAB / CIE94 / CIEDE2000 / DIN99o) both live on this screen;
+changing either one immediately re-runs pixelation + matching and updates
+the on-screen preview image **in place, with no page reload** — no
+"Generate"/"Regenerate" button click needed. No re-upload/re-crop is ever
 required to try a different combination.
+
+The Generate Preview screen's actions are: **Back** (to Crop), **Download
+PNG** (the current preview image), and **View Instructions** (proceeds to
+the tile instructions + assembly diagram step).
 
 There is no palette review/edit step — the palette is fixed (see section 4)
 and isn't part of the user-facing flow at all.

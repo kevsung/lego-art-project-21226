@@ -16,9 +16,8 @@
       <li data-step="1" class="active">Home</li>
       <li data-step="2">Upload</li>
       <li data-step="3">Crop</li>
-      <li data-step="4">Generate</li>
-      <li data-step="5">Preview</li>
-      <li data-step="6">Instructions</li>
+      <li data-step="4">Generate Preview</li>
+      <li data-step="5">Instructions</li>
     </ol>
   </div>
   <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode" type="button">Dark mode</button>
@@ -65,10 +64,10 @@
     </div>
   </section>
 
-  <!-- Step 4: Generate -->
+  <!-- Step 4: Generate Preview -->
   <section class="step-panel" id="panel-4">
-    <h2>3. Generate</h2>
-    <p>Your cropped image is automatically pixelated to a 48&times;48 grid and matched to the kit's Lego inventory. Choose a pooling method below to change how each block of source pixels is reduced.</p>
+    <h2>3. Generate Preview</h2>
+    <p>Your cropped image is automatically pixelated to a 48&times;48 grid and matched to the kit's Lego inventory. Change either dropdown below to instantly update the preview.</p>
     <div class="pooling-control">
       <label for="poolingMethod">Pooling method</label>
       <select id="poolingMethod">
@@ -89,28 +88,19 @@
       </select>
     </div>
     <p id="supplyWarning" class="warning" hidden></p>
-    <div class="actions">
-      <button id="backTo3">Back</button>
-      <button id="generateBtn" class="primary">View preview</button>
-    </div>
-  </section>
-
-  <!-- Step 5: Preview -->
-  <section class="step-panel" id="panel-5">
-    <h2>4. Preview</h2>
     <div id="previewContainer" class="preview-container"></div>
     <div class="actions">
-      <button id="backTo4">Back</button>
+      <button id="backTo3">Back</button>
       <button id="downloadPreview">Download PNG</button>
       <button id="goToInstructions" class="primary">View instructions</button>
     </div>
   </section>
 
-  <!-- Step 6: Instructions -->
-  <section class="step-panel" id="panel-6">
-    <h2>5. Build instructions</h2>
+  <!-- Step 5: Instructions -->
+  <section class="step-panel" id="panel-5">
+    <h2>4. Build instructions</h2>
     <div class="actions no-print">
-      <button id="backTo5">Back</button>
+      <button id="backTo4">Back</button>
       <button id="downloadAll" class="primary">Download all (PNGs)</button>
       <button id="printBtn">Print</button>
     </div>

@@ -100,6 +100,7 @@
   document.getElementById('confirmCrop').addEventListener('click', () => {
     state.croppedCanvas = Cropper.getCroppedCanvas();
     pixelateAndMatch();
+    renderPreview();
     goToStep(4);
   });
 
@@ -120,9 +121,10 @@
   }
   checkSupply();
 
-  // ---------- Step 4: Generate ----------
+  // ---------- Step 4: Generate Preview ----------
   const poolingMethodSelect = document.getElementById('poolingMethod');
   const colorDistanceSelect = document.getElementById('colorDistance');
+  const previewContainer = document.getElementById('previewContainer');
 
   document.getElementById('backTo3').addEventListener('click', () => goToStep(3));
 
@@ -137,22 +139,6 @@
     state.lastColors = Palette.getColors();
   }
 
-  poolingMethodSelect.addEventListener('change', () => {
-    pixelateAndMatch();
-  });
-
-  colorDistanceSelect.addEventListener('change', () => {
-    pixelateAndMatch();
-  });
-
-  document.getElementById('generateBtn').addEventListener('click', () => {
-    renderPreview();
-    goToStep(5);
-  });
-
-  // ---------- Step 5: Preview ----------
-  const previewContainer = document.getElementById('previewContainer');
-
   function renderPreview() {
     previewContainer.innerHTML = '';
     const canvas = Render.renderFullPreview(state.lastAssignment, Pixelate.GRID_SIZE, state.lastColors, 14);
@@ -160,16 +146,23 @@
     state.previewCanvas = canvas;
   }
 
-  document.getElementById('backTo4').addEventListener('click', () => goToStep(4));
+  function regenerate() {
+    pixelateAndMatch();
+    renderPreview();
+  }
+
+  poolingMethodSelect.addEventListener('change', regenerate);
+  colorDistanceSelect.addEventListener('change', regenerate);
+
   document.getElementById('downloadPreview').addEventListener('click', () => {
     Render.downloadCanvas(state.previewCanvas, 'lego-pixel-art-preview.png');
   });
   document.getElementById('goToInstructions').addEventListener('click', () => {
     renderInstructions();
-    goToStep(6);
+    goToStep(5);
   });
 
-  // ---------- Step 6: Instructions ----------
+  // ---------- Step 5: Instructions ----------
   const assemblyContainer = document.getElementById('assemblyContainer');
   const tilesContainer = document.getElementById('tilesContainer');
 
@@ -203,7 +196,7 @@
     });
   }
 
-  document.getElementById('backTo5').addEventListener('click', () => goToStep(5));
+  document.getElementById('backTo4').addEventListener('click', () => goToStep(4));
   document.getElementById('printBtn').addEventListener('click', () => window.print());
   document.getElementById('downloadAll').addEventListener('click', () => {
     Render.downloadCanvas(state.previewCanvas, 'lego-pixel-art-preview.png');
