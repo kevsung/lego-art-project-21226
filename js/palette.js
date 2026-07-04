@@ -24,11 +24,15 @@ const Palette = (() => {
 
   // Greedy confidence-ordered assignment respecting inventory counts.
   // pixels: Uint8ClampedArray-like flat RGBA buffer, length = w*h*4
+  // distanceMethod: one of ColorSpace.DISTANCE_METHODS ('euclideanRgb', 'euclideanLab', 'cie94', 'ciede2000', 'din99o')
   // Returns { assignment: Int32Array(w*h) of palette index or -1, usedCounts }
-  function matchPixels(pixels, w, h) {
+  function matchPixels(pixels, w, h, distanceMethod = 'euclideanLab') {
     const n = w * h;
     const candidates = colors
-      .map((c, idx) => ({ idx, lab: ColorSpace.rgbToLab(...ColorSpace.hexToRgb(c.hex)), stock: Math.max(0, c.count | 0) }))
+      .map((c, idx) => {
+        const rgb = ColorSpace.hexToRgb(c.hex);
+        return { idx, rgb, lab: ColorSpace.rgbToLab(...rgb), stock: Math.max(0, c.count | 0) };
+      })
       .filter((c) => c.stock > 0);
 
     const assignment = new Int32Array(n).fill(-1);
@@ -44,14 +48,17 @@ const Palette = (() => {
     const darkCandidates = candidates.filter((c) => DARK_IDS.has(colors[c.idx].id));
     const PIXEL_DARK_L_THRESHOLD = 35;
 
-    // Precompute pixel Lab + which candidate pool applies + best/second-best
+    // Precompute pixel rgb/Lab + which candidate pool applies + best/second-best
     // distances within that pool, for confidence ordering.
+    const pixelRgbs = new Array(n);
     const pixelLabs = new Array(n);
     const pixelPools = new Array(n);
     const order = [];
     for (let i = 0; i < n; i++) {
       const r = pixels[i * 4], g = pixels[i * 4 + 1], b = pixels[i * 4 + 2];
+      const rgb = [r, g, b];
       const lab = ColorSpace.rgbToLab(r, g, b);
+      pixelRgbs[i] = rgb;
       pixelLabs[i] = lab;
 
       const isDarkPixel = lab[0] < PIXEL_DARK_L_THRESHOLD && darkCandidates.length > 0;
@@ -60,7 +67,7 @@ const Palette = (() => {
 
       let best = Infinity, second = Infinity;
       for (const c of pool) {
-        const d = ColorSpace.labDistance(lab, c.lab);
+        const d = ColorSpace.colorDistance(distanceMethod, rgb, lab, c.rgb, c.lab);
         if (d < best) {
           second = best;
           best = d;
@@ -78,6 +85,7 @@ const Palette = (() => {
     const stock = new Map(candidates.map((c) => [c.idx, c.stock]));
 
     for (const { i } of order) {
+      const rgb = pixelRgbs[i];
       const lab = pixelLabs[i];
       const pool = pixelPools[i];
 
@@ -85,7 +93,7 @@ const Palette = (() => {
       for (const c of pool) {
         const remaining = stock.get(c.idx);
         if (remaining <= 0) continue;
-        const d = ColorSpace.labDistance(lab, c.lab);
+        const d = ColorSpace.colorDistance(distanceMethod, rgb, lab, c.rgb, c.lab);
         if (d < bestDist) {
           bestDist = d;
           bestIdx = c.idx;

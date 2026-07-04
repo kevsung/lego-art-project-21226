@@ -122,20 +122,26 @@
 
   // ---------- Step 4: Generate ----------
   const poolingMethodSelect = document.getElementById('poolingMethod');
+  const colorDistanceSelect = document.getElementById('colorDistance');
 
   document.getElementById('backTo3').addEventListener('click', () => goToStep(3));
 
   function pixelateAndMatch() {
     if (!state.croppedCanvas) return;
     const poolingMethod = poolingMethodSelect.value;
+    const distanceMethod = colorDistanceSelect.value;
     const imgData = Pixelate.toGridImageData(state.croppedCanvas, poolingMethod);
-    const { assignment } = Palette.matchPixels(imgData.data, Pixelate.GRID_SIZE, Pixelate.GRID_SIZE);
+    const { assignment } = Palette.matchPixels(imgData.data, Pixelate.GRID_SIZE, Pixelate.GRID_SIZE, distanceMethod);
 
     state.lastAssignment = assignment;
     state.lastColors = Palette.getColors();
   }
 
   poolingMethodSelect.addEventListener('change', () => {
+    pixelateAndMatch();
+  });
+
+  colorDistanceSelect.addEventListener('change', () => {
     pixelateAndMatch();
   });
 

@@ -78,6 +78,16 @@
         <option value="max">Max</option>
       </select>
     </div>
+    <div class="pooling-control">
+      <label for="colorDistance">Color distance</label>
+      <select id="colorDistance">
+        <option value="euclideanRgb">Euclidean RGB</option>
+        <option value="euclideanLab" selected>Euclidean LAB</option>
+        <option value="cie94">CIE94</option>
+        <option value="ciede2000">CIEDE2000</option>
+        <option value="din99o">DIN99o</option>
+      </select>
+    </div>
     <p id="supplyWarning" class="warning" hidden></p>
     <div class="actions">
       <button id="backTo3">Back</button>
