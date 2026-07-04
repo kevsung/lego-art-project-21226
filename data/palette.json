@@ -1,20 +1,20 @@
 {
   "colors": [
-    { "id": "black", "legoName": "Black", "regularName": "Black", "hex": "#05131D", "count": 254 },
-    { "id": "earth_blue", "legoName": "Earth Blue", "regularName": "Dark Blue", "hex": "#0A3463", "count": 660 },
-    { "id": "dark_azure", "legoName": "Dark Azure", "regularName": "Dark Azure", "hex": "#078BC9", "count": 127 },
-    { "id": "aqua", "legoName": "Aqua", "regularName": "Light Aqua", "hex": "#B3D7D1", "count": 317 },
+    { "id": "black", "legoName": "Black", "regularName": "Black", "hex": "#151515", "count": 254 },
+    { "id": "dark_blue", "legoName": "Dark Blue", "regularName": "Earth Blue", "hex": "#19325A", "count": 660 },
+    { "id": "dark_azure", "legoName": "Dark Azure", "regularName": "Dark Azure", "hex": "#469BC3", "count": 127 },
+    { "id": "aqua", "legoName": "Aqua", "regularName": "Light Aqua", "hex": "#D3F2EA", "count": 317 },
     { "id": "white", "legoName": "White", "regularName": "White", "hex": "#F4F4F4", "count": 474 },
-    { "id": "light_purple", "legoName": "Light Purple", "regularName": "Bright Pink", "hex": "#E4ADC8", "count": 58 },
-    { "id": "bright_red", "legoName": "Bright Red", "regularName": "Red", "hex": "#C91A09", "count": 190 },
-    { "id": "bright_orange", "legoName": "Bright Orange", "regularName": "Orange", "hex": "#FE8A18", "count": 121 },
-    { "id": "flame_yellowish_orange", "legoName": "Flame Yellowish Orange", "regularName": "Bright Light Orange", "hex": "#F8BB3D", "count": 175 },
-    { "id": "bright_yellow", "legoName": "Bright Yellow", "regularName": "Yellow", "hex": "#F2CD37", "count": 299 },
-    { "id": "cool_yellow", "legoName": "Cool Yellow", "regularName": "Bright Light Yellow", "hex": "#FFF03A", "count": 119 },
-    { "id": "brick_yellow", "legoName": "Brick Yellow", "regularName": "Tan", "hex": "#E4CD9E", "count": 241 },
+    { "id": "light_purple", "legoName": "Light Purple", "regularName": "Bright Pink", "hex": "#FF9ECD", "count": 58 },
+    { "id": "bright_red", "legoName": "Bright Red", "regularName": "Red", "hex": "#B40000", "count": 190 },
+    { "id": "bright_orange", "legoName": "Bright Orange", "regularName": "Orange", "hex": "#D67923", "count": 121 },
+    { "id": "flame_yellowish_orange", "legoName": "Flame Yellowish Orange", "regularName": "Bright Light Orange", "hex": "#FCAC00", "count": 175 },
+    { "id": "bright_yellow", "legoName": "Bright Yellow", "regularName": "Yellow", "hex": "#FAC80A", "count": 299 },
+    { "id": "cool_yellow", "legoName": "Cool Yellow", "regularName": "Bright Light Yellow", "hex": "#FFEC6C", "count": 119 },
+    { "id": "brick_yellow", "legoName": "Brick Yellow", "regularName": "Tan", "hex": "#B0A06F", "count": 241 },
     { "id": "medium_nougat", "legoName": "Medium Nougat", "regularName": "Medium Nougat", "hex": "#AA7D55", "count": 281 },
-    { "id": "reddish_brown", "legoName": "Reddish Brown", "regularName": "Reddish Brown", "hex": "#582A12", "count": 307 },
-    { "id": "bright_green", "legoName": "Bright Green", "regularName": "Bright Green", "hex": "#4B9F4A", "count": 148 },
-    { "id": "bright_yellowish_green", "legoName": "Bright Yellowish Green", "regularName": "Lime", "hex": "#A4BD46", "count": 166 }
+    { "id": "reddish_brown", "legoName": "Reddish Brown", "regularName": "Reddish Brown", "hex": "#5F3109", "count": 307 },
+    { "id": "bright_green", "legoName": "Bright Green", "regularName": "Bright Green", "hex": "#58AB41", "count": 148 },
+    { "id": "bright_yellowish_green", "legoName": "Bright Yellowish Green", "regularName": "Lime", "hex": "#A5CA18", "count": 166 }
   ]
 }
