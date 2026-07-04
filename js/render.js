@@ -114,7 +114,29 @@ const Render = (() => {
     }, 'image/png');
   }
 
-  return { renderFullPreview, renderTileGrid, renderAssemblyDiagram, downloadCanvas, isLight };
+  function canvasToBlob(canvas) {
+    return new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+  }
+
+  // Bundles named canvases into a single downloaded .zip (via JSZip).
+  async function downloadCanvasesAsZip(namedCanvases, zipFilename) {
+    const zip = new JSZip();
+    for (const { canvas, filename } of namedCanvases) {
+      const blob = await canvasToBlob(canvas);
+      zip.file(filename, blob);
+    }
+    const zipBlob = await zip.generateAsync({ type: 'blob' });
+    const url = URL.createObjectURL(zipBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = zipFilename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  return { renderFullPreview, renderTileGrid, renderAssemblyDiagram, downloadCanvas, downloadCanvasesAsZip, isLight };
 })();
 
 window.Render = Render;

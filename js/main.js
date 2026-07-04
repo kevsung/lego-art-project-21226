@@ -208,11 +208,12 @@
   document.getElementById('backTo4').addEventListener('click', () => goToStep(4));
   document.getElementById('printBtn').addEventListener('click', () => window.print());
   document.getElementById('downloadAll').addEventListener('click', () => {
-    Render.downloadCanvas(state.previewCanvas, 'lego-pixel-art-preview.png');
-    Render.downloadCanvas(state.assemblyCanvas, 'lego-assembly-diagram.png');
-    state.tileCanvases.forEach(({ canvas, index }) => {
-      Render.downloadCanvas(canvas, `lego-tile-${index}.png`);
-    });
+    const namedCanvases = [
+      { canvas: state.previewCanvas, filename: 'lego-pixel-art-preview.png' },
+      { canvas: state.assemblyCanvas, filename: 'lego-assembly-diagram.png' },
+      ...state.tileCanvases.map(({ canvas, index }) => ({ canvas, filename: `lego-tile-${index}.png` })),
+    ];
+    Render.downloadCanvasesAsZip(namedCanvases, 'lego-pixel-art-instructions.zip');
   });
 
   goToStep(1);

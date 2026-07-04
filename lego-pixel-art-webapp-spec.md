@@ -278,10 +278,17 @@ For each of the 9 tiles, render:
   into the full image.
 
 ### 5j. Export
-- "Download all" should produce, at minimum:
+- "Download all" bundles everything into a **single `.zip` download**
+  (`lego-pixel-art-instructions.zip`) rather than triggering separate
+  individual file downloads:
   - The full 48×48 preview image (PNG).
-  - Each of the 9 tile instruction sheets (PNG, or combine into one printable
-    page/PDF if you want to go further — plain PNGs are enough for v1).
+  - The assembly diagram (PNG).
+  - Each of the 9 tile instruction sheets (PNG).
+- Built client-side with **JSZip**, loaded via a pinned-version CDN script
+  tag (jsDelivr, e.g. `jszip@3.10.1`) — no build step or bundler needed to
+  use it. This is the one external runtime dependency in the app (Google
+  Fonts being the other pre-existing one); both are free CDNs with no
+  meaningful rate limits for a static tool like this.
 - Nice-to-have: a printable HTML view (`window.print()`-friendly CSS) so the
   user can print instructions directly from the browser without needing PDF
   generation at all.
