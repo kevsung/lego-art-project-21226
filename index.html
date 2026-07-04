@@ -79,6 +79,16 @@
   <!-- Step 5: Preview -->
   <section class="step-panel" id="panel-5">
     <h2>4. Preview</h2>
+    <div class="pooling-control">
+      <label for="poolingMethod">Pooling method</label>
+      <select id="poolingMethod">
+        <option value="average" selected>Average</option>
+        <option value="dualMinMax">Dual Min-Max</option>
+        <option value="min">Min</option>
+        <option value="max">Max</option>
+      </select>
+      <button id="regenerateBtn">Regenerate</button>
+    </div>
     <div id="previewContainer" class="preview-container"></div>
     <div class="actions">
       <button id="backTo4">Back</button>

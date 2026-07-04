@@ -90,8 +90,10 @@ throughout the instructions output (see 5h).
 ### 5a. Homepage / intro copy
 Before the upload step, show brief explanatory text (a few sentences is
 enough) making clear to the user that:
+- This tool is built around **Lego set 21226** specifically — the palette
+  reflects exactly what's included in that kit.
 - The output is generated using a **fixed set of 16 colors**, matching
-  exactly what's included in their physical Lego kit.
+  exactly what's included in that kit.
 - The **quantity of each color is limited** to what's in the kit — the tool
   will never assign more pips of a color than are actually available, even
   if the source image would otherwise call for more.
@@ -118,12 +120,35 @@ output doesn't feel like a bug later.
 - Support both mouse drag and touch (mobile-friendly).
 - "Confirm crop" button commits the square region to a working canvas.
 
-### 5d. Pixelate to 48×48
-- Draw the cropped square canvas into a 48×48 canvas using
-  `drawImage` with smoothing enabled (this gives an averaged/downsampled
-  result rather than nearest-neighbor point-sampling, which looks much better
-  for photo-like source images).
-- Read back the 48×48 pixel buffer via `getImageData`.
+### 5d. Pixelate to 48×48 (with selectable pooling method)
+Rather than relying on canvas's built-in resize smoothing (which only gives
+one implicit blending behavior and can't be swapped out), downsample
+manually so the pooling method is explicit and user-selectable:
+
+1. Divide the cropped square source image into a 48×48 grid of blocks (each
+   block is `sourceSize / 48` pixels wide/tall).
+2. For each block, read all source pixels in that region via `getImageData`.
+3. Reduce each block to a single RGB value using the **selected pooling
+   method**, computed independently per channel (R, G, B) across all pixels
+   in the block:
+   - **Average** — mean of the channel values in the block. (This
+     approximates the old smoothing-based downsample and should be the
+     default.)
+   - **Min** — the minimum value of the channel in the block.
+   - **Max** — the maximum value of the channel in the block.
+   - **Dual Min-Max** — `(min + max) / 2` for the channel (midpoint of the
+     block's range — tends to preserve contrast/edges better than a
+     straight average, since it isn't pulled toward whichever value is most
+     common in the block).
+4. Store the resulting 48×48 buffer as before, then continue to palette
+   matching (5e).
+
+**UI control:** add a "Pooling method" dropdown (Average / Dual Min-Max /
+Min / Max) on the generate/preview screen, defaulting to Average. Keep the
+cropped square source image data in app state so that changing this dropdown
+and clicking "Regenerate" re-runs steps 5d–5j (pixelate → match → preview →
+tiles) **without** requiring the user to re-upload or re-crop. This lets
+someone quickly compare pooling methods on the same crop.
 
 ### 5e. Palette matching with inventory constraints
 This is the core algorithm. Naive "nearest color per pixel" will over-use
@@ -207,8 +232,13 @@ For each of the 9 tiles, render:
 ## 6. UI flow (suggested)
 
 1. Homepage (intro/explanation copy) → 2. Upload → 3. Crop → 4. Generate
-(runs pixelate + matching) → 5. Preview full image → 6. View/download tile
-instructions + assembly diagram.
+(choose pooling method, runs pixelate + matching) → 5. Preview full image →
+6. View/download tile instructions + assembly diagram.
+
+The pooling method dropdown (Average / Dual Min-Max / Min / Max) lives on
+the generate/preview screen and can be changed after the fact — changing it
+and clicking "Regenerate" re-runs pixelation and matching against the
+already-cropped image, no re-upload/re-crop needed.
 
 There is no palette review/edit step — the palette is fixed (see section 4)
 and isn't part of the user-facing flow at all.
