@@ -13,12 +13,20 @@ const Render = (() => {
     for (let r = 0; r < gridSize; r++) {
       for (let c = 0; c < gridSize; c++) {
         const idx = assignment[r * gridSize + c];
-        ctx.fillStyle = idx === -1 ? '#000000' : colors[idx].hex;
+        const isEmpty = idx === -1;
+        ctx.fillStyle = isEmpty ? '#000000' : colors[idx].hex;
         const cx = c * pipSize + radius;
         const cy = r * pipSize + radius;
         ctx.beginPath();
         ctx.arc(cx, cy, radius, 0, Math.PI * 2);
         ctx.fill();
+        if (isEmpty) {
+          // Outline so an empty pip stays visible even against a dark page
+          // background, instead of disappearing into it.
+          ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
       }
     }
     return canvas;
@@ -43,8 +51,16 @@ const Render = (() => {
         const x = c * cellSize, y = r * cellSize;
         const cx = x + radius, cy = y + radius;
         if (idx === -1) {
+          // Still draw a circle (matching the shape of every other pip) so an
+          // empty spot reads as an intentional "leave this blank" marker that
+          // can be counted, rather than a gap — just with no color/number.
           ctx.fillStyle = '#000000';
-          ctx.fillRect(x, y, cellSize, cellSize);
+          ctx.beginPath();
+          ctx.arc(cx, cy, radius - 1, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+          ctx.lineWidth = 1;
+          ctx.stroke();
         } else {
           const color = colors[idx];
           ctx.fillStyle = color.hex;
