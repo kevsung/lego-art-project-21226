@@ -99,6 +99,7 @@
   document.getElementById('backTo2').addEventListener('click', () => goToStep(2));
   document.getElementById('confirmCrop').addEventListener('click', () => {
     state.croppedCanvas = Cropper.getCroppedCanvas();
+    pixelateAndMatch();
     goToStep(4);
   });
 
@@ -120,9 +121,12 @@
   checkSupply();
 
   // ---------- Step 4: Generate ----------
+  const poolingMethodSelect = document.getElementById('poolingMethod');
+
   document.getElementById('backTo3').addEventListener('click', () => goToStep(3));
 
   function pixelateAndMatch() {
+    if (!state.croppedCanvas) return;
     const poolingMethod = poolingMethodSelect.value;
     const imgData = Pixelate.toGridImageData(state.croppedCanvas, poolingMethod);
     const { assignment } = Palette.matchPixels(imgData.data, Pixelate.GRID_SIZE, Pixelate.GRID_SIZE);
@@ -131,15 +135,17 @@
     state.lastColors = Palette.getColors();
   }
 
-  document.getElementById('generateBtn').addEventListener('click', () => {
+  poolingMethodSelect.addEventListener('change', () => {
     pixelateAndMatch();
+  });
+
+  document.getElementById('generateBtn').addEventListener('click', () => {
     renderPreview();
     goToStep(5);
   });
 
   // ---------- Step 5: Preview ----------
   const previewContainer = document.getElementById('previewContainer');
-  const poolingMethodSelect = document.getElementById('poolingMethod');
 
   function renderPreview() {
     previewContainer.innerHTML = '';
@@ -147,11 +153,6 @@
     previewContainer.appendChild(canvas);
     state.previewCanvas = canvas;
   }
-
-  document.getElementById('regenerateBtn').addEventListener('click', () => {
-    pixelateAndMatch();
-    renderPreview();
-  });
 
   document.getElementById('backTo4').addEventListener('click', () => goToStep(4));
   document.getElementById('downloadPreview').addEventListener('click', () => {

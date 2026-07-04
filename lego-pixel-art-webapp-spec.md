@@ -174,6 +174,18 @@ This ordering matters: assigning the "easy" pixels first (a very clearly red
 pixel) before the "ambiguous" ones prevents an early ambiguous pixel from
 grabbing a color that a later, more clearly-matching pixel actually needed.
 
+**Dark-pixel restriction (important):** the baseplate/background is black,
+so dark pixels need to stay dark rather than drift toward some other color
+once the darkest colors run out. Pixels with Lab lightness **L < 20** are
+restricted to a candidate pool of **only** the palette's two darkest colors
+— Black (`#151515`) and Dark Blue (`#19325A`) — never any other color, no
+matter how much stock other colors have left. Within that restricted pool,
+still use confidence-ranked assignment (step 5 above). If both Black and
+Dark Blue are exhausted, **leave those pixels unfilled** rather than
+substitute a lighter color — an unfilled pip renders as black in the output
+(see 5f), which matches the actual black baseplate showing through, so it
+reads as intentional background rather than a visible defect.
+
 **Note on total supply:** before running the algorithm, sum all `count`
 values and compare to 2,304 (48×48). If total available pieces < 2,304, warn
 the user up front (they'll run out before the grid is filled) and either let
@@ -188,9 +200,12 @@ result looks patchy on tricky images, this is the place to improve later —
 not needed for a first working version.
 
 ### 5f. Final pixelated preview
-- Render the 48×48 recolored grid back onto a canvas, scaled up with
-  `imageSmoothingEnabled = false` (crisp blocky pixels, not blurred) — e.g.
-  scale each pip to a 12–20px square for viewing/export.
+- Render the 48×48 recolored grid back onto a canvas as **circles** (one
+  circle per pip, matching the physical round piece), scaled up so each pip
+  is a comfortable viewing size (e.g. 12–20px diameter) with
+  `imageSmoothingEnabled = false` on the underlying canvas.
+- Pixels left unfilled due to piece-count exhaustion (see 5e) render as
+  black, matching the baseplate showing through.
 - Offer a PNG download of this final square image.
 
 ### 5g. Split into 9 tiles
@@ -202,18 +217,20 @@ not needed for a first working version.
 
 ### 5h. Build instructions per tile
 For each of the 9 tiles, render:
-- A 16×16 grid showing each cell's color swatch **and** its **numeric color
-  key (1–16)**, matching the physical color-key card the user already builds
-  as part of the kit's setup. The number for a color is simply its 1-indexed
-  position in `palette.json`'s `colors` array (1 = Black, ..., 16 = Bright
-  Yellowish Green) — do not invent a separate coding scheme. Showing the
-  number (not just the swatch color) matters for colorblind users and for
-  readability at small print size.
-- A legend below/beside the grid: swatch → number → Lego color name → count
-  used in this tile. (This is a per-tile "how many of each number you'll need
-  for this tile" summary — helpful for pre-sorting pieces before starting a
-  tile.)
+- A 16×16 grid of **circles** (matching the physical round pieces), each
+  showing its **numeric color key (1–16)** centered on the circle, matching
+  the physical color-key card the user already builds as part of the kit's
+  setup. The number for a color is simply its 1-indexed position in
+  `palette.json`'s `colors` array (1 = Black, ..., 16 = Bright Yellowish
+  Green) — do not invent a separate coding scheme.
+- No separate legend table (swatch/name/count) — the numeric keys on the
+  circles themselves are sufficient, since the user already has the physical
+  color-key card from kit setup mapping numbers to colors.
+- Cells left unfilled (piece-count exhaustion, see 5e) render as black,
+  matching the baseplate.
 - A tile header showing its position label (e.g. "Tile 5 of 9 — Center").
+- Tiles display in a **responsive grid**: up to 3 tiles per row on wider
+  screens, collapsing down via auto-fit for smaller viewports.
 
 ### 5i. Assembly diagram
 - A simple 3×3 layout diagram showing tile numbers/labels in their final
@@ -256,8 +273,10 @@ with a persistent step indicator.
 - A color with 0 count from the start (exclude from candidates entirely —
   since there's no palette editor, this would only happen if `palette.json`
   itself is edited to set a count to 0).
-- Transparent PNGs (flatten onto a white or user-chosen background before
-  processing).
+- Transparent PNGs (flatten onto a **black** background before processing —
+  not white or a lighter color, since the physical baseplate is black and a
+  lighter flatten color would misrepresent what transparent regions should
+  look like in the final piece layout).
 - Large file uploads (multi-MB photos) — downscale early per 5b for
   performance.
 

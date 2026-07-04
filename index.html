@@ -68,17 +68,7 @@
   <!-- Step 4: Generate -->
   <section class="step-panel" id="panel-4">
     <h2>3. Generate</h2>
-    <p>Click Generate to pixelate your cropped image to a 48&times;48 grid and match each pixel to the kit's Lego inventory.</p>
-    <p id="supplyWarning" class="warning" hidden></p>
-    <div class="actions">
-      <button id="backTo3">Back</button>
-      <button id="generateBtn" class="primary">Generate</button>
-    </div>
-  </section>
-
-  <!-- Step 5: Preview -->
-  <section class="step-panel" id="panel-5">
-    <h2>4. Preview</h2>
+    <p>Your cropped image is automatically pixelated to a 48&times;48 grid and matched to the kit's Lego inventory. Choose a pooling method below to change how each block of source pixels is reduced.</p>
     <div class="pooling-control">
       <label for="poolingMethod">Pooling method</label>
       <select id="poolingMethod">
@@ -87,8 +77,17 @@
         <option value="min">Min</option>
         <option value="max">Max</option>
       </select>
-      <button id="regenerateBtn">Regenerate</button>
     </div>
+    <p id="supplyWarning" class="warning" hidden></p>
+    <div class="actions">
+      <button id="backTo3">Back</button>
+      <button id="generateBtn" class="primary">View preview</button>
+    </div>
+  </section>
+
+  <!-- Step 5: Preview -->
+  <section class="step-panel" id="panel-5">
+    <h2>4. Preview</h2>
     <div id="previewContainer" class="preview-container"></div>
     <div class="actions">
       <button id="backTo4">Back</button>
