@@ -210,6 +210,18 @@ substitute a lighter color — an unfilled pip renders as black in the output
 (see 5f), which matches the actual black baseplate showing through, so it
 reads as intentional background rather than a visible defect.
 
+**Transparent-background restriction:** PNGs (or other formats) with
+transparency keep their alpha channel intact all the way from upload through
+crop and pixelation — the app no longer flattens transparent regions onto a
+background color at all. Any output pixel whose block-averaged alpha falls
+below a threshold (~50%) is **never assigned a pip**, regardless of stock —
+it's excluded from matching entirely (no color distance is even computed for
+it), so no stock is consumed on its behalf. It renders exactly like an
+unfilled pip (see 5f): as black, matching the baseplate. Whenever an
+uploaded image has any transparency, show a note on both the Generate
+Preview screen and the Build Instructions screen explaining that any circle
+without a number code in the diagrams means to leave that space empty.
+
 **Note on total supply:** before running the algorithm, sum all `count`
 values and compare to 2,304 (48×48). If total available pieces < 2,304, warn
 the user up front (they'll run out before the grid is filled) and either let
@@ -314,16 +326,19 @@ with a persistent step indicator.
 - A color with 0 count from the start (exclude from candidates entirely —
   since there's no palette editor, this would only happen if `palette.json`
   itself is edited to set a count to 0).
-- Transparent PNGs (flatten onto a **black** background before processing —
-  not white or a lighter color, since the physical baseplate is black and a
-  lighter flatten color would misrepresent what transparent regions should
-  look like in the final piece layout).
+- Transparent PNGs (see 5e's transparent-background restriction — no
+  background flatten happens at all; transparent regions are simply left
+  unfilled, and a note is shown explaining unlabeled circles mean "leave
+  empty").
 - Large file uploads (multi-MB photos) — downscale early per 5b for
   performance.
 
 ## 8. Testing checklist
 
-- Upload jpg, png, and a transparent PNG — confirm sane output for all three.
+- Upload jpg, png, and a transparent PNG — confirm sane output for all
+  three, and that the transparent PNG leaves its transparent regions
+  unfilled with the explanatory note showing on both the Generate Preview
+  and Instructions screens.
 - Crop a very wide and a very tall image — confirm the square crop UI behaves.
 - Set one color's count to 0 and confirm it never appears in output.
 - Set total supply below 2,304 and confirm the warning fires.

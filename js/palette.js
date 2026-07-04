@@ -38,15 +38,19 @@ const Palette = (() => {
     const assignment = new Int32Array(n).fill(-1);
 
     if (candidates.length === 0) {
-      return { assignment, usedCounts: {} };
+      return { assignment, usedCounts: {}, hasTransparency: false };
     }
 
-    // Very dark source pixels (e.g. a flattened transparent background, or
-    // dark image content) may only ever be matched to these two darkest
-    // palette colors — never any other color, even if both run out of stock.
+    // Very dark source pixels (e.g. dark image content) may only ever be
+    // matched to these two darkest palette colors — never any other color,
+    // even if both run out of stock.
     const DARK_IDS = new Set(['black', 'dark_blue']);
     const darkCandidates = candidates.filter((c) => DARK_IDS.has(colors[c.idx].id));
     const PIXEL_DARK_L_THRESHOLD = 35;
+
+    // Source pixels below this alpha are treated as transparent background:
+    // no pip is ever assigned there, and no stock is consumed for them.
+    const ALPHA_THRESHOLD = 128;
 
     // Precompute pixel rgb/Lab + which candidate pool applies + best/second-best
     // distances within that pool, for confidence ordering.
@@ -54,7 +58,13 @@ const Palette = (() => {
     const pixelLabs = new Array(n);
     const pixelPools = new Array(n);
     const order = [];
+    let hasTransparency = false;
     for (let i = 0; i < n; i++) {
+      if (pixels[i * 4 + 3] < ALPHA_THRESHOLD) {
+        hasTransparency = true;
+        continue; // leave assignment[i] as -1, never considered for matching
+      }
+
       const r = pixels[i * 4], g = pixels[i * 4 + 1], b = pixels[i * 4 + 2];
       const rgb = [r, g, b];
       const lab = ColorSpace.rgbToLab(r, g, b);
@@ -114,7 +124,7 @@ const Palette = (() => {
       usedCounts[c.idx] = c.stock - stock.get(c.idx);
     }
 
-    return { assignment, usedCounts };
+    return { assignment, usedCounts, hasTransparency };
   }
 
   return { load, getColors, setColors, totalSupply, matchPixels };

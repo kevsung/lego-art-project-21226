@@ -73,7 +73,9 @@
       bitmap = await createImageBitmap(file);
     }
 
-    // Flatten transparency onto white, downscale if huge.
+    // Downscale if huge; keep transparency intact (no background flatten) so
+    // transparent regions can be left as unfilled pips later, rather than
+    // matched to any color.
     let w = bitmap.width, h = bitmap.height;
     const longEdge = Math.max(w, h);
     if (longEdge > MAX_LONG_EDGE) {
@@ -86,8 +88,6 @@
     canvas.width = w;
     canvas.height = h;
     const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#000000';
-    ctx.fillRect(0, 0, w, h);
     ctx.drawImage(bitmap, 0, 0, w, h);
 
     Cropper.setImage(canvas, w, h);
@@ -128,15 +128,24 @@
 
   document.getElementById('backTo3').addEventListener('click', () => goToStep(3));
 
+  const transparencyNoteText = 'This image has a transparent background: any circle without a number code in the diagrams below means leave that space empty.';
+  const previewTransparencyNote = document.getElementById('previewTransparencyNote');
+  const instructionsTransparencyNote = document.getElementById('instructionsTransparencyNote');
+  previewTransparencyNote.textContent = transparencyNoteText;
+  instructionsTransparencyNote.textContent = transparencyNoteText;
+
   function pixelateAndMatch() {
     if (!state.croppedCanvas) return;
     const poolingMethod = poolingMethodSelect.value;
     const distanceMethod = colorDistanceSelect.value;
     const imgData = Pixelate.toGridImageData(state.croppedCanvas, poolingMethod);
-    const { assignment } = Palette.matchPixels(imgData.data, Pixelate.GRID_SIZE, Pixelate.GRID_SIZE, distanceMethod);
+    const { assignment, hasTransparency } = Palette.matchPixels(imgData.data, Pixelate.GRID_SIZE, Pixelate.GRID_SIZE, distanceMethod);
 
     state.lastAssignment = assignment;
     state.lastColors = Palette.getColors();
+    state.hasTransparency = hasTransparency;
+    previewTransparencyNote.hidden = !hasTransparency;
+    instructionsTransparencyNote.hidden = !hasTransparency;
   }
 
   function renderPreview() {
