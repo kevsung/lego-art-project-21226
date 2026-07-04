@@ -192,33 +192,6 @@
       card.appendChild(canvas);
       state.tileCanvases.push({ canvas, index: tile.index });
 
-      const counts = Tiles.tileColorCounts(tile);
-      const legend = document.createElement('table');
-      legend.className = 'legend';
-      legend.innerHTML = '<thead><tr><th></th><th>#</th><th>Lego Color</th><th>Count</th></tr></thead>';
-      const tbody = document.createElement('tbody');
-      [...counts.entries()]
-        .sort((a, b) => b[1] - a[1])
-        .forEach(([idx, count]) => {
-          const color = state.lastColors[idx];
-          const tr = document.createElement('tr');
-          const swatchTd = document.createElement('td');
-          const swatch = document.createElement('span');
-          swatch.className = 'swatch';
-          swatch.style.background = color.hex;
-          swatchTd.appendChild(swatch);
-          const codeTd = document.createElement('td');
-          codeTd.textContent = codes[idx];
-          const nameTd = document.createElement('td');
-          nameTd.textContent = color.legoName;
-          const countTd = document.createElement('td');
-          countTd.textContent = count;
-          tr.append(swatchTd, codeTd, nameTd, countTd);
-          tbody.appendChild(tr);
-        });
-      legend.appendChild(tbody);
-      card.appendChild(legend);
-
       tilesContainer.appendChild(card);
     });
   }

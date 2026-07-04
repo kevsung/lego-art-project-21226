@@ -11,7 +11,6 @@
   --step-bg: #eee;
   --step-text: #777;
   --accent: #d0271d;
-  --legend-border: #eee;
   --warning-bg: #fff3cd;
   --warning-border: #ffe08a;
   --warning-text: #7a5c00;
@@ -29,7 +28,6 @@
   --step-bg: #2a2e35;
   --step-text: #a0a4ab;
   --accent: #e14a3f;
-  --legend-border: #33373d;
   --warning-bg: #4a3c15;
   --warning-border: #6b5720;
   --warning-text: #ffdf8a;
@@ -233,8 +231,14 @@ button:hover {
 
 .tiles-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 24px;
+}
+
+@media (min-width: 900px) {
+  .tiles-container {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .tile-card {
@@ -252,23 +256,6 @@ button:hover {
   max-width: 100%;
   display: block;
   margin: 0 auto 8px;
-}
-
-.legend {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.8rem;
-}
-
-.legend th, .legend td {
-  border: 1px solid var(--legend-border);
-  padding: 3px 6px;
-  text-align: left;
-}
-
-.legend .swatch {
-  width: 16px;
-  height: 16px;
 }
 
 @media print {

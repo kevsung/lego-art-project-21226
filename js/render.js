@@ -9,11 +9,16 @@ const Render = (() => {
     const ctx = canvas.getContext('2d');
     ctx.imageSmoothingEnabled = false;
 
+    const radius = pipSize / 2;
     for (let r = 0; r < gridSize; r++) {
       for (let c = 0; c < gridSize; c++) {
         const idx = assignment[r * gridSize + c];
         ctx.fillStyle = idx === -1 ? '#cccccc' : colors[idx].hex;
-        ctx.fillRect(c * pipSize, r * pipSize, pipSize, pipSize);
+        const cx = c * pipSize + radius;
+        const cy = r * pipSize + radius;
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+        ctx.fill();
       }
     }
     return canvas;
@@ -31,21 +36,26 @@ const Render = (() => {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
+    const radius = cellSize / 2;
     for (let r = 0; r < size; r++) {
       for (let c = 0; c < size; c++) {
         const idx = tile.cells[r * size + c];
         const x = c * cellSize, y = r * cellSize;
+        const cx = x + radius, cy = y + radius;
         if (idx === -1) {
           ctx.fillStyle = '#eeeeee';
           ctx.fillRect(x, y, cellSize, cellSize);
         } else {
           const color = colors[idx];
           ctx.fillStyle = color.hex;
-          ctx.fillRect(x, y, cellSize, cellSize);
+          ctx.beginPath();
+          ctx.arc(cx, cy, radius - 1, 0, Math.PI * 2);
+          ctx.fill();
           ctx.strokeStyle = 'rgba(0,0,0,0.15)';
-          ctx.strokeRect(x + 0.5, y + 0.5, cellSize - 1, cellSize - 1);
+          ctx.lineWidth = 1;
+          ctx.stroke();
           ctx.fillStyle = isLight(color.hex) ? '#000000' : '#ffffff';
-          ctx.fillText(codes[idx], x + cellSize / 2, y + cellSize / 2 + 1);
+          ctx.fillText(codes[idx], cx, cy + 1);
         }
       }
     }
