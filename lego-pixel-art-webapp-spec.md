@@ -144,11 +144,12 @@ manually so the pooling method is explicit and user-selectable:
    matching (5e).
 
 **UI control:** add a "Pooling method" dropdown (Average / Dual Min-Max /
-Min / Max) on the generate/preview screen, defaulting to Average. Keep the
-cropped square source image data in app state so that changing this dropdown
-and clicking "Regenerate" re-runs steps 5d–5j (pixelate → match → preview →
-tiles) **without** requiring the user to re-upload or re-crop. This lets
-someone quickly compare pooling methods on the same crop.
+Min / Max) on the generate screen, defaulting to Average. Keep the cropped
+square source image data in app state so that pixelation + matching run
+**automatically** — as soon as the Generate step is entered (right after
+crop confirmation), and again immediately whenever the dropdown selection
+changes — with no manual "Generate"/"Regenerate" button click required.
+This lets someone quickly compare pooling methods on the same crop.
 
 ### 5e. Palette matching with inventory constraints
 This is the core algorithm. Naive "nearest color per pixel" will over-use
@@ -169,6 +170,27 @@ popular colors beyond what's in stock, so it needs to account for supply.
    remaining stock**, decrement that color's stock, then move on.
 6. If a color's stock hits 0, remove it from candidates for all remaining
    pixels.
+
+**Selectable color distance formula:** "nearest color" (steps 4–5 above) is
+computed using a **user-selectable distance function**, not a hardcoded one.
+Support:
+- **Euclidean RGB** — straight Euclidean distance in raw RGB space (no Lab
+  conversion).
+- **Euclidean LAB** — Euclidean distance in Lab space (the default; what the
+  original v1 algorithm used unconditionally).
+- **CIE94** — Lab-based, graphic-arts weighting (`kL=kC=kH=1`,
+  `K1=0.045`, `K2=0.015`).
+- **CIEDE2000** — Lab-based, the more perceptually refined successor to
+  CIE94 (Sharma et al. 2005 reference formula).
+- **DIN99o** — converts Lab into the DIN99o uniform color space (a rotation
+  + logarithmic compression of chroma/lightness) and takes Euclidean
+  distance there.
+
+**UI control:** add a "Color distance" dropdown (Euclidean RGB / Euclidean
+LAB / CIE94 / CIEDE2000 / DIN99o) on the Generate screen, alongside the
+pooling method dropdown, defaulting to Euclidean LAB. Like the pooling
+dropdown, changing this selection re-runs matching immediately — no button
+click needed.
 
 This ordering matters: assigning the "easy" pixels first (a very clearly red
 pixel) before the "ambiguous" ones prevents an early ambiguous pixel from
@@ -249,13 +271,17 @@ For each of the 9 tiles, render:
 ## 6. UI flow (suggested)
 
 1. Homepage (intro/explanation copy) → 2. Upload → 3. Crop → 4. Generate
-(choose pooling method, runs pixelate + matching) → 5. Preview full image →
-6. View/download tile instructions + assembly diagram.
+(pixelate + matching run automatically; pooling method and color distance
+dropdowns available) → 5. Preview full image → 6. View/download tile
+instructions + assembly diagram.
 
-The pooling method dropdown (Average / Dual Min-Max / Min / Max) lives on
-the generate/preview screen and can be changed after the fact — changing it
-and clicking "Regenerate" re-runs pixelation and matching against the
-already-cropped image, no re-upload/re-crop needed.
+The pooling method dropdown (Average / Dual Min-Max / Min / Max) and the
+color distance dropdown (Euclidean RGB / Euclidean LAB / CIE94 / CIEDE2000 /
+DIN99o) both live on the Generate screen. Entering the Generate step (right
+after crop confirmation) automatically runs pixelation and matching against
+the cropped image; changing either dropdown re-runs it again immediately —
+no "Generate"/"Regenerate" button click needed. No re-upload/re-crop is ever
+required to try a different combination.
 
 There is no palette review/edit step — the palette is fixed (see section 4)
 and isn't part of the user-facing flow at all.
