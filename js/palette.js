@@ -37,6 +37,13 @@ const Palette = (() => {
       return { assignment, usedCounts: {} };
     }
 
+    // The darkest palette colors (near-black), used to keep very dark source
+    // pixels (e.g. a flattened transparent background) from falling back to
+    // a lighter color once those run out of stock.
+    const DARK_L_THRESHOLD = 25;
+    const darkCandidates = candidates.filter((c) => c.lab[0] < DARK_L_THRESHOLD);
+    const PIXEL_DARK_L_THRESHOLD = 20;
+
     // Precompute pixel Lab + best/second-best distances for confidence ordering.
     const pixelLabs = new Array(n);
     const order = [];
@@ -66,8 +73,11 @@ const Palette = (() => {
 
     for (const { i } of order) {
       const lab = pixelLabs[i];
+      const isDarkPixel = lab[0] < PIXEL_DARK_L_THRESHOLD && darkCandidates.length > 0;
+      const pool = isDarkPixel ? darkCandidates : candidates;
+
       let bestIdx = -1, bestDist = Infinity;
-      for (const c of candidates) {
+      for (const c of pool) {
         const remaining = stock.get(c.idx);
         if (remaining <= 0) continue;
         const d = ColorSpace.labDistance(lab, c.lab);
@@ -76,6 +86,8 @@ const Palette = (() => {
           bestIdx = c.idx;
         }
       }
+      // Dark pixels never fall back to a lighter color once dark stock runs out;
+      // they're left unfilled instead.
       if (bestIdx !== -1) {
         assignment[i] = bestIdx;
         stock.set(bestIdx, stock.get(bestIdx) - 1);
