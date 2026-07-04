@@ -128,7 +128,7 @@
 
   document.getElementById('backTo3').addEventListener('click', () => goToStep(3));
 
-  const transparencyNoteText = 'This image has a transparent background: any circle without a number code in the diagrams below means leave that space empty.';
+  const transparencyNoteText = 'This image has a transparent background: any circle without a number code in the instructions diagrams means leave that space empty.';
   const previewTransparencyNote = document.getElementById('previewTransparencyNote');
   const instructionsTransparencyNote = document.getElementById('instructionsTransparencyNote');
   previewTransparencyNote.textContent = transparencyNoteText;
